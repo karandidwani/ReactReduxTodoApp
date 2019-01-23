@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {addTodo, removeTodo} from "./actionCreator";
+import {Route} from 'react-router-dom'
+import {addTodo, removeTodo, updateTodo} from "./actionCreator";
+import TodoForm from './TodoForm'
 import Todo from './Todo'
 import './TodoList.css'
 
@@ -8,30 +10,20 @@ class TodoList extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            todoText: ""
-        }
-
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleUpdate = this.handleUpdate.bind(this);
     }
 
-    handleSubmit(e) {
-        e.preventDefault();
-        this.props.addTodo(this.state.todoText);
-        this.setState({
-            todoText: ""
-        })
+    handleSubmit(val){
+        this.props.addTodo(val);
     }
 
-    handleChange(e) {
-        this.setState({
-            [e.target.name]: e.target.value
-        });
-    }
-
-    handleDelete(id){
+    handleDelete(id) {
         this.props.removeTodo(id);
+    }
+
+    handleUpdate(id, completed){
+        this.props.updateTodo(id, !completed)
     }
 
     render() {
@@ -39,36 +31,18 @@ class TodoList extends Component {
         const todos = this.props.todos.map((todo, index) => (
             <Todo
                 key={index}
-                todo={todo.todo}
+                todo={todo}
                 onDelete={this.handleDelete.bind(this, todo.id)}
+                onUpdate={ this.handleUpdate.bind(this, todo.id, todo.completed)}
             />
         ))
 
         return (
-            <div className='container text-center'>
-                <h1>React-Redux TodoList App</h1>
-                <div className="jumbotron">
-                    <form onSubmit={this.handleSubmit}>
-                        <label htmlFor="todoText">Enter your todo here</label>
-                        <input
-                            type="text"
-                            id="todoText"
-                            name="todoText"
-                            value={ this.state.todoText}
-                            onChange={this.handleChange}
-                            required
-                        />
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                        >
-                            Add todo
-                        </button>
-                    </form>
-                </div>
-                <ul className="list-group">
-                    {todos}
-                </ul>
+            <div>
+                <Route exact path='/todos' render={() => (<ul className="list-group">{todos}</ul>)}/>
+                <Route path ='/todos/new' render={props => (
+                    <TodoForm {...props} handleSubmit={this.handleSubmit}/>
+                )}/>
             </div>
         )
     }
@@ -80,4 +54,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, {addTodo, removeTodo})(TodoList);
+export default connect(mapStateToProps, {addTodo, removeTodo, updateTodo})(TodoList);
