@@ -5,7 +5,7 @@ const Todo = ({todo, onDelete, onUpdate}) => {
     let style = {}
 
     if (todo.completed) {
-        style = {color:'red', textDecoration:'line-through'}
+        style = {color:'green', textDecoration:'line-through'}
     }
 
     return (
@@ -17,6 +17,7 @@ const Todo = ({todo, onDelete, onUpdate}) => {
             {todo.todo}
             {todo.completed}
             <button
+                style={{}}
                 onClick={onDelete}
                 className="alert-danger"
             >X
